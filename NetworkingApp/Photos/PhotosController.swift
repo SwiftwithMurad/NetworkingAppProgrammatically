@@ -59,4 +59,10 @@ extension PhotosController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let controller = PhotoDetailController()
+        controller.title = viewModel.photo[indexPath.row].title
+        navigationController?.show(controller, sender: nil)
+    }
 }

@@ -17,6 +17,9 @@ class PhotosCell: UITableViewCell {
     
     private let photoLabel: UILabel = {
         let label = UILabel()
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .black
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -26,6 +29,7 @@ class PhotosCell: UITableViewCell {
         
         configUI()
         configConstraints()
+        configImage()
     }
     
     required init?(coder: NSCoder) {
@@ -33,6 +37,7 @@ class PhotosCell: UITableViewCell {
     }
     
     func configUI() {
+        selectionStyle = .none
         addSubview(photoImage)
         photoImage.addSubview(photoLabel)
     }
@@ -44,15 +49,28 @@ class PhotosCell: UITableViewCell {
             photoImage.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             photoImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
             photoImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-            photoImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
+            photoImage.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             
             photoLabel.leadingAnchor.constraint(equalTo: photoImage.leadingAnchor, constant: 16),
             photoLabel.bottomAnchor.constraint(equalTo: photoImage.bottomAnchor, constant: -8),
         ])
     }
     
+    func configImage() {
+        let url = URL(string: "https://picsum.photos/200/300?grayscale")
+        let processor = DownsamplingImageProcessor(size: photoImage.bounds.size)
+        photoImage.kf.setImage(with: url, placeholder: nil, options: [.processor(processor), .scaleFactor(UIScreen.main.scale), .transition(.fade(1)), .cacheOriginalImage]) { result in
+            switch result {
+            case .success(let value):
+                print("Task done for: \(value.source.url?.absoluteString ?? "")")
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func configCell(photo: Photos) {
-        photoImage.image = UIImage(named: photo.url ?? "")
         photoLabel.text = photo.title ?? ""
     }
 }
+
